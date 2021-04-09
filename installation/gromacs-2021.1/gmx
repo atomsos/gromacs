@@ -1,0 +1,17 @@
+#!/bin/bash
+CURDIR="$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")"
+[ "$(ldd $CURDIR/gmx_avx512_cuda  | grep cufft.so | grep not)" ] && CUDA=0 || CUDA=1
+echo $CUDA
+
+
+
+
+if [ "$(cat /proc/cpuinfo | grep avx512)" ]
+then
+	[ $CUDA -eq 0 ] && $CURDIR/gmx_avx512 $* || $CURDIR/gmx_avx512_cuda $*
+elif [ "$(cat /proc/cpuinfo | grep avx2)" ] 
+then
+	[ $CUDA -eq 0 ] && $CURDIR/gmx_avx2 $* || $CURDIR/gmx_avx2_cuda $*
+	# $CURDIR/gmx_avx2 $*
+fi
+
