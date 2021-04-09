@@ -53,3 +53,15 @@ md:
         gmx mdrun -v -deffnm md -nt $(PBS_NP) -nb cpu -pme cpu  -pmefft cpu -pin on
 
 
+.PHONY: traj
+traj:
+        gmx traj -f md.xtc -s md.tpr -oxt protein_lig.gro -n index.ndx -dt 100 << EOF
+        24
+        EOF
+        gmx traj -f md.xtc -s md.tpr -oxt envir.gro -n index.ndx -dt 100 << EOF
+        25
+        EOF
+        ## compress for download
+        pigz protein_lig.gro || gzip protein_lig.gro
+        pigz envir.gro || gzip envir.gro
+
